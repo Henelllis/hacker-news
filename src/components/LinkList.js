@@ -4,44 +4,58 @@ import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 
 const FEED_QUERY = gql`
-  {
-    feed {
-      links {
-        id
-        createdAt
-        url
-        description
+    query{
+      allLinks{
+        edges{
+          node{
+            id,
+            createdAt,
+            description,
+            url
+          }
+        }
       }
     }
-  }
-`
+    `
+// const FEED_QUERY = gql`
+//     {
+//       allEmployees {
+//         edges {
+//           node {
+//             id
+//             name
+//             department {
+//               name
+//             }
+//           }
+//         }
+//       }
+//     }
+//     `
 
 class LinkList extends Component{
+
     render(){
-        const linksToRender = [
-            {
-                id: '1',
-                description: 'Prisma turns your database into a GraphQL API 😎 😎',
-                url: 'https://prismagraphql.com',
-            },
-            {
-                id:'2',
-                description: 'The Best GraphQl Client',
-                url: 'https://www.apollographql.com/docs/react/',
-            },
-        ]
+
 
         return(
             <Query query={FEED_QUERY}>
                 {({ loading, error, data}) => {
                     if(loading) return<div> LOADING </div>
                     if(error) return <div> ERROR </div>
-
-                    const linksToRender = data.feed.links
-
+                    console.log(JSON.stringify(data))
+                    let linksToRender = data.allLinks
+                    console.log(JSON.stringify(linksToRender))
+                    linksToRender = data.allLinks
+                    console.log(JSON.stringify(linksToRender.edges))
                     return(
                         <div>
-                            {linksToRender.map(link => <Link key={link.id} link={link} />)}
+                            {linksToRender.edges.map(link => {
+                                console.log('INSIDE MAPPING FUNCTION ' + JSON.stringify(link))
+                                return(
+                                    <Link key={link.node.id} link={link.node} />
+                                )
+                            })}
                         </div>
                     )
                 }}
